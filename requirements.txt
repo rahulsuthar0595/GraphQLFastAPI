@@ -8,3 +8,6 @@ alembic==1.15.1
 passlib
 bcrypt==4.0.1
 starlette==0.46.1
+graphql-core==3.2.6
+opentelemetry-api==1.31.0
+opentelemetry-sdk==1.31.0

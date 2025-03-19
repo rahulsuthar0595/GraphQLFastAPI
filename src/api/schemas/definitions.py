@@ -50,8 +50,15 @@ class ReviewFilter(FilteredDataMixin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+from strawberry.schema_directive import Location
 
-@strawberry.type
+
+@strawberry.schema_directive(locations=[val for val in Location])
+class Keys:
+    title: str
+
+
+@strawberry.type(directives=[Keys(title="title")])
 class MovieType(FilteredDataMixin):
     id: int
     title: str
@@ -64,7 +71,7 @@ class MovieType(FilteredDataMixin):
         super().__init__(**kwargs)
 
     @strawberry.field()
-    async def reviews(self, info: strawberry.Info) -> List[ReviewType]:
+    async def reviews(self, parent: strawberry.Parent, info: strawberry.Info) -> List[ReviewType]:
         db = info.context["db"]
         return await get_all_reviews_data_for_movie(db=db, movie_id=self.id)
 
@@ -108,6 +115,18 @@ class UserRegister:
     email: str
     password: str
     role: UserRoleEnum
+
+
+@strawberry.input
+class UserLogin:
+    email: str
+    password: str
+
+
+@strawberry.type
+class UserError:
+    message: str
+    status_code: int
 
 
 @strawberry.type

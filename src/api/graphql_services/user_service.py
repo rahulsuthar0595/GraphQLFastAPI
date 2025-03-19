@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 from email_validator import EmailNotValidError, validate_email
 from graphql import GraphQLError
@@ -49,3 +50,19 @@ async def fetch_user_by_email(db, email: str) -> UserType | None:
     except Exception as e:
         logging.error(f"Error in service user_register: {e}")
         raise GraphQLError(message="Something went wrong")
+
+
+async def validate_user_login(db, email: str, password: str) -> tuple[bool, str, object]:
+    try:
+        user = await get_user_by_email(db=db, email=email)
+        if not user:
+            return False, "User not found", None
+
+        hashed_password = hash_password(password)
+        if user.hashed_password != hashed_password:
+            return False, "Invalid Password", None
+
+        return True, "Success", user
+    except Exception as e:
+        logging.error(f"Error in service validate_user_login: {e}")
+        return False, "Something went wrong", None

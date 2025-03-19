@@ -12,6 +12,7 @@ from src.api.graphql_services.movie_service import (
     update_movie_data,
 )
 from src.api.schemas.definitions import MovieFilter, MovieInput, MovieType
+from src.api.utils.permissions import IsAuthenticated
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 @strawberry.type
 class MovieQuery:
 
-    @strawberry.field()
+    @strawberry.field(permission_classes=[IsAuthenticated])
     async def get_all_movies(
             self, info: strawberry.Info, page: int, page_size: int
     ) -> List[MovieType]:
